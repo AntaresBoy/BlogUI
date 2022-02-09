@@ -7,11 +7,11 @@
                         placement="top">
         <el-card>
 
-          <a href="">
-            <h2 class="post-title">Update Github template</h2>
+          <el-link @click="handleContent">
+            <h2 class="post-title">{{title}}</h2>
             <p class="time-commited">Tom committed 2022/01/27 20:46</p>
             <p>概述Promise是异步编程的一种解决方案，比传统的解决方案——回调函数和事件——更合理和更强大。它由社区最早提出和实现，ES6将其写进了语言标准，统一了用法，原生提供了Promise对象。Promise对象有以下两个特点。 对象的状态不受外界影响。Promise对象代表一个异步操作，有三种状态：pending（进行中）、fulfilled（已成功）和rejected（已失败）。只有异步操...</p>
-          </a>
+          </el-link>
           <a href=""
              class="tag">
             <el-tag class="ml-2"
@@ -59,11 +59,23 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { openWindow } from "@/utils/index";
+import { buildShortUUID } from "@/utils/uuid";
 export default defineComponent({
   name: "Content",
   setup(props) {
     console.log(props);
+    const title = ref("Promise概述");
+    const contentId = buildShortUUID();
+    function handleContent() {
+      console.log("contentId", contentId);
+      openWindow(`/#/article/${contentId}`);
+    }
+    return {
+      handleContent,
+      title
+    };
   }
 });
 </script>
