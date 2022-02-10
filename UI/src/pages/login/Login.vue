@@ -53,6 +53,7 @@ const handleLogin = async () => {
   const result = await login(data);
   if (result.data.errno === ResponseNumberEnum.SUCCESS) {
     useMessage("welcome to AntaresLpq blog!", "success");
+    sessionStorage.setItem("isLogin", "true");
     router.push("/home");
     return;
   }

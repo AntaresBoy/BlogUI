@@ -7,20 +7,19 @@ function resolve(dir) {
   return path.resolve(__dirname, dir)
 }
 module.exports = {
-  // publicPath: './',
-  outputDir: 'dist',
-  productionSourceMap: false,
-  filenameHashing: true,
-  assetsDir: 'src/assets',
-  indexPath: 'index.html',
   lintOnSave: false,
-
   chainWebpack: config => {
     config.resolve.alias.set("@", resolve("src")) //解决eslint不使用变量报错问题
     // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     //忽略monent/locale下的所有文件
     config.plugin('ignore').use(new webpack.IgnorePlugin(/^\.\/locale$/, /monment$/))
   },
+  // publicPath: './',
+  outputDir: 'dist',
+  productionSourceMap: false,
+  filenameHashing: true,
+  assetsDir: 'src/assets',
+  indexPath: 'index.html',
   configureWebpack: {
     devtool: "source-map",
     module: {

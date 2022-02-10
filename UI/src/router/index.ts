@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/login',
   },
   {
     path: '/home',
@@ -27,6 +27,21 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+})
+router.beforeEach((to, from, next) => {
+  const isLogin = sessionStorage.getItem('isLogin')
+  console.log('beforeEach', to, isLogin)
+  console.log(from)
+  if (!isLogin) {
+    if (to.path === '/login') {
+      next()
+    } else {
+      next('/login')
+    }
+  } else {
+    console.log('ssss')
+    next()
+  }
 })
 
 export default router

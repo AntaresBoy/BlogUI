@@ -11,8 +11,20 @@
           <el-link>CSDN</el-link>
           <el-link>CATEGORIES</el-link>
           <el-link @click="handleLearningMaterials">学习资料</el-link>
-          <el-link @click="handleLogin">登录</el-link>
-          <el-link>注册</el-link>
+          <el-dropdown @command="handleCommand">
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+            <el-avatar size="large"
+                       src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="addBlog">新建博客</el-dropdown-item>
+                <el-dropdown-item command="sign out">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
         </div>
       </el-header>
       <el-main>
@@ -48,11 +60,6 @@ export default defineComponent({
       console.log("onMounted", result);
     });
 
-    function handleLogin() {
-      console.log("handleLogin");
-      router.push("/login");
-    }
-
     function handleToGitHub() {
       openWindow(GITHUB_URL);
     }
@@ -65,11 +72,17 @@ export default defineComponent({
       openWindow("http://huang303513.github.io/");
     }
 
+    function handleCommand(command: string | number | object) {
+      console.log("handleCommand", command);
+      if (command === "sign out") router.push("/login");
+      if (command === "addBlog") router.push("/article/111");
+    }
+
     return {
       handleToHome,
-      handleLogin,
       handleToGitHub,
-      handleLearningMaterials
+      handleLearningMaterials,
+      handleCommand
     };
   }
 });
