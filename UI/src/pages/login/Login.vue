@@ -8,7 +8,6 @@
       </div>
       <!-- 登录表单区域 -->
       <el-form label-width="0px"
-               ref="ruleFormRef"
                :model="loginInfo"
                class="login_form"
                label-position="top">
