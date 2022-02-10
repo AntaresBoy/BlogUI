@@ -89,7 +89,7 @@ export default defineComponent({
       //此处根据id从服务器获取博客详情
       // value.value = `<p>文本测试<p>`;
       console.log("onMounted", contentId);
-      tinymce.init(init);
+      tinymce.init({});
     });
 
     function handleClear() {
