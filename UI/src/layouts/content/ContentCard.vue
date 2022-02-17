@@ -1,107 +1,129 @@
 <template>
   <div class="block">
-    <el-timeline>
-      <el-timeline-item timestamp="2022/01/27"
-                        center
-                        color="hsl"
-                        placement="top">
+    <el-timeline v-for="item in blogInfoList" :key="item.contentId">
+      <el-timeline-item
+        :timestamp="item.createtime"
+        center
+        color="hsl"
+        placement="top"
+      >
         <el-card>
+          <h2 class="post-title">{{ item.title }}</h2>
+          <p class="time-commited">
+            commited by: {{ item.author }} on: {{ item.createtime }}
+          </p>
+          <p class="content">
+            {{
+              item.content.length > 1000
+                ? item.content.slice(0, 200) + '...'
+                : item.content
+            }}
+          </p>
+          <el-button circle class="el-tag">
+            {{ item.tags }}
+          </el-button>
 
-          <el-link @click="handleContent">
-            <h2 class="post-title">{{title}}</h2>
-            <p class="time-commited">Tom committed 2022/01/27 20:46</p>
-            <p>概述Promise是异步编程的一种解决方案，比传统的解决方案——回调函数和事件——更合理和更强大。它由社区最早提出和实现，ES6将其写进了语言标准，统一了用法，原生提供了Promise对象。Promise对象有以下两个特点。 对象的状态不受外界影响。Promise对象代表一个异步操作，有三种状态：pending（进行中）、fulfilled（已成功）和rejected（已失败）。只有异步操...</p>
-          </el-link>
-          <a href=""
-             class="tag">
-            <el-tag class="ml-2"
-                    type="info"
-                    label="Promise"
-                    title="Promise"
-                    effect='plain'>Promise</el-tag>
-          </a>
-        </el-card>
-      </el-timeline-item>
-      <el-timeline-item timestamp="2018/4/3"
-                        center
-                        placement="top">
-        <el-card>
-          <h4>Update Github template</h4>
-          <p>Tom committed 2018/4/3 20:46</p>
-        </el-card>
-      </el-timeline-item>
-      <el-timeline-item timestamp="2018/4/2"
-                        center
-                        placement="top">
-        <el-card>
-          <h4>Update Github template</h4>
-          <p>Tom committed 2018/4/2 20:46</p>
-        </el-card>
-      </el-timeline-item>
-      <el-timeline-item timestamp="2018/4/2"
-                        center
-                        placement="top">
-        <el-card>
-          <h4>Update Github template</h4>
-          <p>Tom committed 2018/4/2 20:46</p>
-        </el-card>
-      </el-timeline-item>
-      <el-timeline-item timestamp="2018/4/2"
-                        center
-                        placement="top">
-        <el-card>
-          <h4>Update Github template</h4>
-          <p>Tom committed 2018/4/2 20:46</p>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="删除"
+            placement="top-start"
+          >
+            <el-button
+              class="el-button"
+              type="danger"
+              icon="Delete"
+              circle
+              @click="deleteArticle(item.contentId)"
+            >
+            </el-button>
+          </el-tooltip>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="编辑"
+            placement="top-start"
+          >
+            <el-button
+              type="primary"
+              icon="Edit"
+              class="el-button"
+              circle
+              @click="handleContent(item)"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="查看"
+            placement="top-start"
+          >
+            <el-button
+              type="primary"
+              icon="View"
+              class="el-button"
+              circle
+              @click="handleView(item)"
+            ></el-button>
+          </el-tooltip>
         </el-card>
       </el-timeline-item>
     </el-timeline>
   </div>
 </template>
 
-<script lang='ts'>
-import { defineComponent, ref } from "vue";
-import { openWindow } from "@/utils/index";
-import { buildShortUUID } from "@/utils/uuid";
+<script lang="ts">
+import { defineComponent, ref, onMounted, reactive, toRefs } from 'vue'
+import { openWindow, getYMDHMS } from '@/utils/index'
+import { getBlogList, deleteBlogById } from '@/api/blog/blog'
+import { isSuccess } from '@/utils/http/index'
+import { useMessage } from '@/hooks/web/useMessage'
+
 export default defineComponent({
-  name: "Content",
+  name: 'Content',
   setup(props) {
-    console.log(props);
-    const title = ref("Promise概述");
-    const contentId = buildShortUUID();
-    function handleContent() {
-      console.log("contentId", contentId);
-      openWindow(`/#/article/${contentId}`);
+    let blogInfoList: any = reactive([])
+    function handleContent(curItem: any) {
+      if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/edit`)
     }
+
+    onMounted(async () => {
+      const result: any = await getBlogList()
+      Object.assign(blogInfoList, result.data.data)
+    })
+
+    async function deleteArticle(contentId: string) {
+      const result = await deleteBlogById(contentId)
+      if (isSuccess(result)) {
+        useMessage('删除成功！', 'success')
+        location.reload()
+      } else {
+        useMessage('删除失败！', 'error')
+      }
+    }
+
+    async function handleView(curItem: any) {
+      console.log('handleView', curItem)
+      if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/view`)
+    }
+
     return {
       handleContent,
-      title
-    };
-  }
-});
+      blogInfoList,
+      deleteArticle,
+      handleView,
+    }
+  },
+})
 </script>
 
 <style lang="less" scoped>
 el-card {
   background-color: skyblue;
 }
-/* 未访问的链接 */
-a:link {
-  color: wheat;
-}
 
-/* 已访问的链接 */
-a:visited {
-  color: skyblue;
-}
-
-/* 鼠标悬停链接 */
-a:hover {
-  color: wheat;
-}
-
-/* 已选择的链接 */
-a:active {
-  color: lightgreen;
+.content {
+  text-align: justify;
 }
 .post-title {
   font-size: 1.5rem;
@@ -118,7 +140,19 @@ p {
   text-align: justify;
 }
 .tag {
+  position: absolute;
+  left: 30px;
+  bottom: 5px;
+}
+.el-button {
+  float: right;
+  margin-right: 1px;
+  margin-bottom: 2px;
+}
+.el-tag {
+  position: relative;
   float: left;
-  margin: 10px auto;
+  bottom: -6px;
+  left: -5px;
 }
 </style>

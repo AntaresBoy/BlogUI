@@ -6,6 +6,7 @@ import { ContentTypeEnum } from "@/config/enums/httpEnums"
 import { TIME_OUT } from "@/config/const/setting"
 import type { CreateAxiosOptions } from "./axiosTransform"
 import {checkStatus} from './checkStatus'
+import {ResultEnum} from "@/config/enums/httpEnums"
 
 class AxiosCreator {
 
@@ -61,7 +62,6 @@ class AxiosCreator {
       //响应错误处理
       responseInterceptorsCatch(error: any){
         const { response, code, message, config } = error || {};
-        console.log("responseInterceptorsCatch",error,message,config)
         const msg: string = response?.data?.error?.message ?? '';
         const err: string = error?.toString?.() ?? '';
         checkStatus(error?.response?.status, msg);
@@ -79,5 +79,13 @@ export const httpInstance = new AxiosCreator().createAxios()
 //     urlPrefix: 'xxx',
 //   },
 // });
+
+
+export const isSuccess=(result:any)=>{
+  if(result.data.errno===ResultEnum.SUCCESS){
+    return true
+  }
+  return false
+}
 
 

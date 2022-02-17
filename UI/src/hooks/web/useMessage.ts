@@ -10,3 +10,12 @@ export const useMessage = (msg: string, type: MessageType = 'info') => {
     grouping: true,
   })
 }
+
+export const useCloser=(type: string,seconds: string | number=1000)=>{
+  seconds=typeof seconds==='string'?parseInt(seconds):seconds
+  let msg=`博客${type}成功,窗口将在${seconds/1000}s后关闭！`
+  useMessage(msg)
+  setTimeout(()=>{
+    window.close()
+  },seconds)
+}

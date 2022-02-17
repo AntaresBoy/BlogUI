@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: 'home'*/ '@/pages/Home.vue'),
   },
   {
-    path: '/article/:contentId',
+    path: '/article/:contentId/:type',
     name: 'Article',
     component: () =>
       import(/* webpackChunkName: 'article' */ '@/pages/content/Article.vue'),
@@ -28,10 +28,9 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 })
+//路由前置守卫
 router.beforeEach((to, from, next) => {
   const isLogin = sessionStorage.getItem('isLogin')
-  console.log('beforeEach', to, isLogin)
-  console.log(from)
   if (!isLogin) {
     if (to.path === '/login') {
       next()
@@ -39,7 +38,6 @@ router.beforeEach((to, from, next) => {
       next('/login')
     }
   } else {
-    console.log('ssss')
     next()
   }
 })

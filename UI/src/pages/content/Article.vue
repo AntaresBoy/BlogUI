@@ -1,117 +1,134 @@
 <template>
-  <div>
-    <el-input placeholder="标题"
-              id="el-input-style"></el-input>
-    <editor id="tinymce"
-            v-model="value"
-            :disabled="disabled"
-            :init="init"></editor>
-    <el-button type='error'
-               size='small'
-               @click="handleClear">清空内容</el-button>
-    <el-button type='info'
-               size='small'
-               @click="disabled = true">禁用</el-button>
-    <el-button type='primary'
-               size='small'
-               @click="handleSave">保存</el-button>
+  <div class="article">
+    <el-row class="el-row" type="flex">
+      <el-col :span="16" class="el-col">
+        <el-input placeholder="标题" :title="title" v-model="title"></el-input>
+      </el-col>
+      <el-col :span="8" class="el-col">
+        <el-select
+          clearable
+          v-model="selectedTags"
+          multiple
+          filterable
+          allow-create
+          default-first-option
+          :reserve-keyword="false"
+          placeholder="请选择文章所属类别"
+        >
+          <el-option
+            v-for="item in TAGS"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+    </el-row>
+
+    <MdEditor ref="mdEditor" thume="github" :onSave="onSave"></MdEditor>
   </div>
 </template>
 
-<script lang='ts'>
-import axios from "axios";
-import tinymce from "tinymce";
-import { useRouter, useRoute } from "vue-router";
-import { useMessage } from "@/hooks/web/useMessage";
-import {
-  PLUGINS,
-  TOOLBAR,
-  CONTENT_CSS,
-  SKIN_URL,
-  LANGUAGE_URL
-} from "@/config/const/const";
+<script lang="ts">
+import { useRoute } from 'vue-router'
+import { useMessage, useCloser } from '@/hooks/web/useMessage'
 import {
   defineComponent,
   reactive,
   ref,
   defineAsyncComponent,
-  onMounted
-} from "vue";
+  onMounted,
+} from 'vue'
+import { getDetailById, updateBlogById, newBlogApi } from '@/api/blog/blog'
+import { isSuccess } from '@/utils/http/index'
+import { UpdateBlogType, NewBlogType } from '@/api/model/blogsModel'
+import { TAGS } from '@/config/const/const'
 
 export default defineComponent({
-  name: "Article",
+  name: 'Article',
   components: {
-    Editor: defineAsyncComponent(() => import("@tinymce/tinymce-vue"))
+    MdEditor: defineAsyncComponent(() =>
+      import('@/components/md-editor/MdEditor.vue')
+    ),
   },
   setup(props, context) {
-    const { push } = useRouter();
-    const { params } = useRoute();
-    const value = ref("");
-    const disabled = ref(false);
-    const init = reactive({
-      language_url: LANGUAGE_URL, // 语言包的路径
-      language: "zh_CN", //语言
-      skin_url: SKIN_URL, // skin路径
-      content_css: CONTENT_CSS,
-      height: 500, //编辑器高度
-      branding: false, //是否禁用“Powered by TinyMCE”
-      menubar: false, //顶部菜单栏显示
-      elementpath: false,
-      theme: "silver",
-      placeholder: "内容",
-      toolbar_mode: "scrolling",
-      resize: "both",
-      toolbar: TOOLBAR,
-      plugins: PLUGINS,
-      images_upload_handler: uploadImg
-    });
+    const { params } = useRoute()
+    const mdEditor: any = ref(null)
+    let title = ref('')
+    let selectedTags = ref<string[]>([])
 
-    //图片上传
-    function uploadImg(blobInfo: any, success: any, failure: any) {
-      const formData = new FormData();
-      formData.append("file", blobInfo.blob(), blobInfo.filename());
-      axios
-        .post("/upload/xxxx", formData)
-        .then((res: any) => {
-          if (res.status == 200) {
-            success(res.data.link);
-            return;
+    async function newBlog() {
+      const data: NewBlogType = {
+        tags: selectedTags.value,
+        title: title.value,
+        content: mdEditor.value.content,
+      }
+      const result = await newBlogApi(data)
+      if (isSuccess(result)) {
+        useCloser('创建')
+      } else {
+        useMessage('创建失败!', 'error')
+      }
+    }
+
+    async function getBlogDetail(contentId: string) {
+      const result: any = await getDetailById(contentId)
+      const type = params.type
+      if (isSuccess(result)) {
+        setTimeout(() => {
+          if (mdEditor.value && type === 'edit') {
+            mdEditor.value.mode = 'editable'
+          } else {
+            mdEditor.value.mode = 'preview'
           }
-          failure("上传失败");
-        })
-        .catch(() => {
-          failure("上传出错");
-        });
+          mdEditor.value.content = result.data.data.content
+        }, 100)
+        title.value = result.data.data.title
+        selectedTags.value = result.data.data.tags.split(',')
+      } else {
+        useMessage('获取文章失败！', 'error')
+      }
     }
 
-    onMounted(() => {
-      const contentId = params.contentId;
-      //此处根据id从服务器获取博客详情
-      // value.value = `<p>文本测试<p>`;
-      console.log("onMounted", contentId);
-      tinymce.init({});
-    });
+    onMounted(async () => {
+      if ((params.contentId as string) !== 'newBlog') {
+        getBlogDetail(params.contentId as string)
+      }
+    })
 
-    function handleClear() {
-      console.log("tinymce", tinymce);
+    async function updateBlog(contentId: string) {
+      const data: UpdateBlogType = {
+        content: mdEditor.value.content,
+        title: title.value,
+        contentId,
+        tags: selectedTags.value,
+      }
+      const result: any = await updateBlogById(data)
+      if (isSuccess(result)) {
+        useCloser('更新')
+      } else {
+        useMessage('博客更新失败！', 'error')
+      }
     }
 
-    function handleSave() {
-      useMessage("保存成功", "success");
-      setTimeout(() => {
-        window.close();
-      }, 1000);
+    async function onSave() {
+      if ((params.contentId as string) !== 'newBlog') {
+        updateBlog(params.contentId as string)
+      } else {
+        newBlog()
+      }
     }
 
     return {
-      init,
-      value,
-      disabled,
-      handleClear,
-      handleSave
-    };
-  }
-});
+      title,
+      mdEditor,
+      onSave,
+      TAGS,
+      selectedTags,
+    }
+  },
+})
 </script>
 
 <style lang="less" scoped>
@@ -125,5 +142,8 @@ button {
 /deep/ #el-input-style {
   margin-top: 10px;
   margin-bottom: 20px;
+}
+.article {
+  margin: 5px 5px;
 }
 </style>

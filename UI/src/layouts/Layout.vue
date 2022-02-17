@@ -7,16 +7,18 @@
         <div class="right-header">
           <el-link @click="handleToHome">HOME</el-link>
           <el-link @click="handleToGitHub">Github</el-link>
-          <el-link>ARCHIVES</el-link>
-          <el-link>CSDN</el-link>
-          <el-link>CATEGORIES</el-link>
+          <el-link @click="handleToArchives">ARCHIVES</el-link>
+          <el-link @click="handleToCSDN">CSDN</el-link>
+          <el-link @click="handleToCategories">CATEGORIES</el-link>
           <el-link @click="handleLearningMaterials">学习资料</el-link>
           <el-dropdown @command="handleCommand">
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
-            <el-avatar size="large"
-                       src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <el-avatar
+              size="large"
+              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+            ></el-avatar>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="addBlog">新建博客</el-dropdown-item>
@@ -24,7 +26,6 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-
         </div>
       </el-header>
       <el-main>
@@ -37,55 +38,63 @@
   </el-container>
 </template>
 
-<script lang='ts'>
-import { defineComponent, onMounted, defineAsyncComponent } from "vue";
-import { useRouter } from "vue-router";
-import { useMessage } from "@/hooks/web/useMessage";
-import { GITHUB_URL } from "@/config/const/const";
-import { openWindow } from "@/utils/index";
-import { getBlogList, getBlogDetail } from "@/api/blog/blog";
+<script lang="ts">
+import { defineComponent, defineAsyncComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { openWindow } from '@/utils/index'
+import { CSDN_URL, JUEJIN_URL, GITHUB_URL } from '@/config/const/const'
+import { useMessage } from '@/hooks/web/useMessage'
 
 export default defineComponent({
-  name: "Layout",
+  name: 'Layout',
   components: {
     ContentCard: defineAsyncComponent(() =>
-      import("@/layouts/content/ContentCard.vue")
-    )
+      import('@/layouts/content/ContentCard.vue')
+    ),
   },
   setup(props, context) {
-    const router = useRouter();
-    console.log("setup", props, context);
-    onMounted(async () => {
-      const result = await getBlogList();
-      console.log("onMounted", result);
-    });
-
-    function handleToGitHub() {
-      openWindow(GITHUB_URL);
-    }
+    const router = useRouter()
 
     async function handleToHome() {
-      console.log("handleToHome");
+      router.push('/home')
     }
 
     function handleLearningMaterials() {
-      openWindow("http://huang303513.github.io/");
+      openWindow(JUEJIN_URL)
     }
 
     function handleCommand(command: string | number | object) {
-      console.log("handleCommand", command);
-      if (command === "sign out") router.push("/login");
-      if (command === "addBlog") router.push("/article/111");
+      if (command === 'sign out') router.push('/login')
+      if (command === 'addBlog') openWindow('/#/article/newBlog/edit')
+    }
+
+    function handleToGitHub() {
+      openWindow(GITHUB_URL)
+    }
+
+    function handleToCSDN() {
+      openWindow(CSDN_URL)
+    }
+
+    function handleToCategories() {
+      useMessage('开发中...')
+    }
+
+    function handleToArchives() {
+      useMessage('开发中...')
     }
 
     return {
       handleToHome,
       handleToGitHub,
       handleLearningMaterials,
-      handleCommand
-    };
-  }
-});
+      handleCommand,
+      handleToCSDN,
+      handleToCategories,
+      handleToArchives,
+    }
+  },
+})
 </script>
 
 <style lang="less" scoped>
