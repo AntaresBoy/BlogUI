@@ -95,6 +95,7 @@ export default defineComponent({
       const result: any = await getBlogList()
       if(!isSuccess(result)){
         router.push("/login")
+        useCloseLoading(loadingInstance)
         return;
       }
       Object.assign(blogInfoList, result.data.data)
