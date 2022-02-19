@@ -7,7 +7,7 @@
       </div> -->
       <p1>登录</p1>
    <div class="to-register-style">
-     没有账号?<router-link to="/register">点击注册</router-link>
+     没有账号?<router-link :to="{path:'register'}">点击注册</router-link>
    </div>
       <!-- 登录表单区域 -->
       <el-form

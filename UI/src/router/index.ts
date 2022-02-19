@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path:"/register",
     name:"Register",
-    component:()=>import(/*webpackChunkName: "register" */"@/pages/register/Register.vue")
+    component:()=>import(/* webpackChunkName: "register" */"@/pages/register/Register.vue")
   }
 ]
 
@@ -37,7 +37,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isLogin = sessionStorage.getItem('isLogin')
   if (!isLogin) {
-    if (to.path === '/login') {
+    if (to.path === '/login' || to.path==='/register') {
       next()
     } else {
       next('/login')

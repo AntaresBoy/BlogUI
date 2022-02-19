@@ -3,7 +3,7 @@
     <div class="login_box">
    <p1>注册</p1>
    <div class="toLogin-style">
-     已有账号?<router-link to="/login">点击登录</router-link>
+     已有账号?<router-link :to="{path:'login'}">点击登录</router-link>
    </div>
       
       <!-- 注册表单区域 -->

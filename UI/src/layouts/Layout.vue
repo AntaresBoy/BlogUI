@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent, reactive, onMounted } from 'vue'
+import { defineComponent, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { openWindow } from '@/utils/index'
 import { CSDN_URL, JUEJIN_URL, GITHUB_URL } from '@/config/const/const'
@@ -63,7 +63,7 @@ export default defineComponent({
       openWindow(JUEJIN_URL)
     }
 
-    function handleCommand(command: string | number | object) {
+    function handleCommand(command: string | number) {
       if (command === 'sign out') router.push('/login')
       if (command === 'addBlog') openWindow('/#/article/newBlog/edit')
     }
