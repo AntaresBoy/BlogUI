@@ -61,7 +61,8 @@ module.exports = {
         changeOrigin: true
       },
       "/api": {
-        target: "http://10.9.183.183:8000",
+        // target: "http://10.9.183.183:8000",
+        target: "http://39.108.119.239:8000",
         secure: true,
         changeOrigin: true,
       }

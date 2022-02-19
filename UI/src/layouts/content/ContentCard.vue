@@ -19,7 +19,7 @@
                 : item.content
             }}
           </p>
-          <el-button circle class="el-tag">
+          <el-button circle class="el-tag" v-if="item.tags">
             {{ item.tags }}
           </el-button>
 
@@ -73,8 +73,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, reactive, toRefs } from 'vue'
-import { openWindow, getYMDHMS } from '@/utils/index'
+import { defineComponent,  onMounted, reactive } from 'vue'
+import { openWindow } from '@/utils/index'
 import { getBlogList, deleteBlogById } from '@/api/blog/blog'
 import { isSuccess } from '@/utils/http/index'
 import { useMessage } from '@/hooks/web/useMessage'
