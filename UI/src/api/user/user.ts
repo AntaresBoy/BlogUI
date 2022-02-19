@@ -1,11 +1,12 @@
 import { httpInstance } from '@/utils/http/index'
-import { GetSuperAdministratorModel, DelAdministratorModel,LoginModel} from '@/api/model/userModel'
+import { GetSuperAdministratorModel, DelAdministratorModel,LoginModel,RegisterModel} from '@/api/model/userModel'
 import type { UserAdministrator } from "@/types/utils"
-import type {LoginInfo} from "@/types/user"
+import type {LoginInfo,RegisterType} from "@/types/user"
 
 enum UserApi {
   GetSuperAdministrator = 'ids/manager/auth/super_administrator',
-  GetUserLogin='api/user/login'
+  GetUserLogin='api/user/login',
+  UserRegister='api/user/register'
 }
 
 let requestParams
@@ -40,3 +41,10 @@ export const login=(params: LoginInfo)=>{
   return httpInstance.post<LoginModel>(requestParams)
 }
 
+export const register=(params:RegisterType)=>{
+  requestParams={
+    url:UserApi.UserRegister,
+    data:params
+  }
+  return httpInstance.post<RegisterModel>(requestParams)
+}

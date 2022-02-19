@@ -37,7 +37,7 @@
         <!-- 按钮区域 -->
         <el-row justify="center">
           <el-form-item class="login_btn">
-            <el-button type="primary" @click="handleLogin"  class="login-button-style">登录</el-button>
+            <el-button type="primary" @click="handleLogin"  class="login-button-style" :disabled="loginIsDisabled">登录</el-button>
           </el-form-item>
         </el-row>
       </el-form>
@@ -47,25 +47,28 @@
 
 <script lang="ts" setup>
 import '@/assets/css/login/login.less'
-import { reactive, toRaw } from 'vue'
+import { reactive, toRaw,computed } from 'vue'
 import router from '@/router'
 import { login } from '@/api/user/user'
 import { useMessage } from '@/hooks/web/useMessage'
 import { ResponseNumberEnum } from '@/config/enums/httpEnums'
-import {openWindow} from "@/utils/index"
 
 const handleLogin = async () => {
   const data = { ...toRaw(loginInfo) }
   const result = await login(data)
   if (result.data.errno === ResponseNumberEnum.SUCCESS) {
-    useMessage('welcome to AntaresLpq blog!', 'success')
+    useMessage('登录成功!', 'success')
     sessionStorage.setItem('isLogin', 'true')
     router.push('/home')
     localStorage.setItem('username', loginInfo.username)
     return
   }
-  useMessage('登录失败', 'error')
+  useMessage('登录失败！', 'error')
 }
+
+const loginIsDisabled=computed(()=>{
+  return loginInfo.username.length<3 || loginInfo.password.length<6
+})
 
 const loginInfo = reactive({
   username: '',

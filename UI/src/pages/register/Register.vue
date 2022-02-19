@@ -9,7 +9,7 @@
       <!-- 注册表单区域 -->
       <el-form
         label-width="0px"
-        :model="loginInfo"
+        :model="registerInfo"
         class="login_form"
         label-position="top"
       >
@@ -19,7 +19,7 @@
             autocomplete="off"
             placeholder="手机或邮箱"
             type="text"
-            v-model="loginInfo.username"
+            v-model="registerInfo.username"
           ></el-input>
         </el-form-item>
         <!-- 密码 -->
@@ -28,13 +28,13 @@
             type="password"
             placeholder="密码不少于6位"
             autocomplete="off"
-            v-model="loginInfo.password"
+            v-model="registerInfo.password"
           ></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
         <el-row justify="center">
           <el-form-item class="login_btn">
-            <el-button type="info" @click="handleRegister" class="register-button-style">注册</el-button>
+            <el-button type="info" @click="handleRegister" class="register-button-style" :disabled="registerIsDisabled">注册</el-button>
           </el-form-item>
         </el-row>
       </el-form>
@@ -44,34 +44,37 @@
 
 <script lang="ts" setup>
 import '@/assets/css/login/login.less'
-import { reactive, toRaw } from 'vue'
+import { reactive, toRaw,computed } from 'vue'
 import router from '@/router'
-import { login } from '@/api/user/user'
+import { register } from '@/api/user/user'
 import { useMessage } from '@/hooks/web/useMessage'
 import { ResponseNumberEnum } from '@/config/enums/httpEnums'
-import {openWindow} from "@/utils/index"
 
-const handleLogin = async () => {
-  const data = { ...toRaw(loginInfo) }
-  const result = await login(data)
+const handleRegister = async () => {
+ const data = { ...toRaw(registerInfo) }
+  const result = await register(data)
+  console.log("handleRegister",data,result)
+  if(registerInfo.password==="" || registerInfo.username===""){
+    useMessage('请输入用户名和密码!')
+    return;
+  }
   if (result.data.errno === ResponseNumberEnum.SUCCESS) {
-    useMessage('welcome to AntaresLpq blog!', 'success')
-    sessionStorage.setItem('isLogin', 'true')
-    router.push('/home')
-    localStorage.setItem('username', loginInfo.username)
+    useMessage('注册成功!', 'success')
+    router.push('/login')
     return
   }
-  useMessage('登录失败', 'error')
+  useMessage('注册失败!', 'error')
 }
+const registerIsDisabled=computed(()=>{
+  console.log("xxxxx",registerInfo.username, registerInfo.username.length)
+  return registerInfo.username.length<3 || registerInfo.password.length<6
+})
 
-const handleRegister = () => {
-  console.log("handleRegister")
-}
-
-const loginInfo = reactive({
+const registerInfo = reactive({
   username: '',
   password: '',
 })
+
 </script>
 
 <style>
