@@ -1,10 +1,11 @@
 <template>
   <div class="article">
+    <h1 v-if="isViewType">{{title}}</h1>
     <el-row class="el-row"
             type="flex">
       <el-col :span="16"
               class="el-col">
-        <h1 v-if="isViewType">{{title}}</h1>
+        
         <el-input v-if="!isViewType"
                   placeholder="标题"
                   :title="title"
