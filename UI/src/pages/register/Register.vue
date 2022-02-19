@@ -1,15 +1,12 @@
 <template>
   <div class="login_container">
     <div class="login_box">
-      <!-- 头像区域 -->
-      <!-- <div class="avatar_box">
-        <img src="@/assets/imgs/sport.gif" alt="/" />
-      </div> -->
-      <p1>登录</p1>
-   <div class="to-register-style">
-     没有账号?<router-link to="/register">点击注册</router-link>
+   <p1>注册</p1>
+   <div class="toLogin-style">
+     已有账号?<router-link to="/login">点击登录</router-link>
    </div>
-      <!-- 登录表单区域 -->
+      
+      <!-- 注册表单区域 -->
       <el-form
         label-width="0px"
         :model="loginInfo"
@@ -20,7 +17,7 @@
         <el-form-item label="账号*">
           <el-input
             autocomplete="off"
-            placeholder="用户名"
+            placeholder="手机或邮箱"
             type="text"
             v-model="loginInfo.username"
           ></el-input>
@@ -29,7 +26,7 @@
         <el-form-item label="密码*">
           <el-input
             type="password"
-            placeholder="密码"
+            placeholder="密码不少于6位"
             autocomplete="off"
             v-model="loginInfo.password"
           ></el-input>
@@ -37,7 +34,7 @@
         <!-- 按钮区域 -->
         <el-row justify="center">
           <el-form-item class="login_btn">
-            <el-button type="primary" @click="handleLogin"  class="login-button-style">登录</el-button>
+            <el-button type="info" @click="handleRegister" class="register-button-style">注册</el-button>
           </el-form-item>
         </el-row>
       </el-form>
@@ -67,18 +64,23 @@ const handleLogin = async () => {
   useMessage('登录失败', 'error')
 }
 
+const handleRegister = () => {
+  console.log("handleRegister")
+}
+
 const loginInfo = reactive({
   username: '',
   password: '',
 })
 </script>
-<style lang="less">
-.login-button-style{
+
+<style>
+.register-button-style{
   color:  #fff;
   width:410px;
   background: #fe7300;
-} 
-.to-register-style{
+}
+.toLogin-style{
   position: relative;
   left: 300px;
   top:10px;

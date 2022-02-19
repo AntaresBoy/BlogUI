@@ -44,6 +44,7 @@ import { getDetailById, updateBlogById, newBlogApi } from '@/api/blog/blog'
 import { isSuccess } from '@/utils/http/index'
 import { UpdateBlogType, NewBlogType } from '@/api/model/blogsModel'
 import { TAGS } from '@/config/const/const'
+import { useOpenLoading,useCloseLoading } from '@/hooks/common/useLoading';
 
 export default defineComponent({
   name: 'Article',
@@ -73,6 +74,7 @@ export default defineComponent({
     }
 
     async function getBlogDetail(contentId: string) {
+      const instance=useOpenLoading(true)
       const result: any = await getDetailById(contentId)
       const type = params.type
       if (isSuccess(result)) {
@@ -89,6 +91,7 @@ export default defineComponent({
       } else {
         useMessage('获取文章失败！', 'error')
       }
+       useCloseLoading(instance)
     }
 
     onMounted(async () => {

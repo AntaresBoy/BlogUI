@@ -73,11 +73,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,  onMounted, reactive } from 'vue'
+import { defineComponent,  onMounted, reactive,ref } from 'vue'
 import { openWindow } from '@/utils/index'
 import { getBlogList, deleteBlogById } from '@/api/blog/blog'
 import { isSuccess } from '@/utils/http/index'
 import { useMessage } from '@/hooks/web/useMessage'
+import { useOpenLoading,useCloseLoading } from '@/hooks/common/useLoading';
 
 export default defineComponent({
   name: 'Content',
@@ -88,8 +89,10 @@ export default defineComponent({
     }
 
     onMounted(async () => {
+      const loadingInstance=useOpenLoading(true)
       const result: any = await getBlogList()
       Object.assign(blogInfoList, result.data.data)
+      useCloseLoading(loadingInstance)
     })
 
     async function deleteArticle(contentId: string) {
