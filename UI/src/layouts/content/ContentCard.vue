@@ -79,10 +79,12 @@ import { getBlogList, deleteBlogById } from '@/api/blog/blog'
 import { isSuccess } from '@/utils/http/index'
 import { useMessage } from '@/hooks/web/useMessage'
 import { useOpenLoading,useCloseLoading } from '@/hooks/common/useLoading';
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'Content',
   setup(props) {
+    const  router= useRouter()
     let blogInfoList: any = reactive([])
     function handleContent(curItem: any) {
       if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/edit`)
@@ -91,6 +93,10 @@ export default defineComponent({
     onMounted(async () => {
       const loadingInstance=useOpenLoading(true)
       const result: any = await getBlogList()
+      if(!isSuccess(result)){
+        router.push("/login")
+        return;
+      }
       Object.assign(blogInfoList, result.data.data)
       useCloseLoading(loadingInstance)
     })
