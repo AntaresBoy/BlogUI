@@ -106,7 +106,6 @@ export default defineComponent({
     }
 
     async function handleView(curItem: any) {
-      console.log('handleView', curItem)
       if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/view`)
     }
 

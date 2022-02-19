@@ -53,7 +53,6 @@ import { ResponseNumberEnum } from '@/config/enums/httpEnums'
 const handleRegister = async () => {
  const data = { ...toRaw(registerInfo) }
   const result = await register(data)
-  console.log("handleRegister",data,result)
   if(registerInfo.password==="" || registerInfo.username===""){
     useMessage('请输入用户名和密码!')
     return;
@@ -66,7 +65,6 @@ const handleRegister = async () => {
   useMessage('注册失败!', 'error')
 }
 const registerIsDisabled=computed(()=>{
-  console.log("xxxxx",registerInfo.username, registerInfo.username.length)
   return registerInfo.username.length<3 || registerInfo.password.length<6
 })
 

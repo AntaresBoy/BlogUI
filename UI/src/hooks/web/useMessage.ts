@@ -1,7 +1,7 @@
 import { ElMessage } from 'element-plus'
 import type {MessageType} from "@/types/global"
 
-export const useMessage = (msg: string, type: MessageType = 'info') => {
+export const useMessage = (msg: string, type: MessageType = 'success') => {
   ElMessage({
     message: msg,
     type: type,
