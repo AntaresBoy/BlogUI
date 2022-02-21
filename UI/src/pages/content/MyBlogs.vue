@@ -15,7 +15,7 @@
           </p>
           <p class="content">
             {{
-              item.content.length > 200
+              item.content.length > 1000
                 ? item.content.slice(0, 200) + '...'
                 : item.content
             }}
@@ -35,6 +35,31 @@
                          circle
                          @click="handleView(item)"></el-button>
             </el-tooltip>
+            <el-tooltip class="item"
+                        effect="dark"
+                        content="编辑"
+                        placement="top-start">
+              <el-button type="primary"
+                         icon="Edit"
+                         circle
+                         @click="handleContent(item)"></el-button>
+            </el-tooltip>
+
+            <el-popconfirm confirm-button-text="确定"
+                           cancel-button-text="取消"
+                           :icon="InfoFilled"
+                           icon-color="red"
+                           title="确定删除此条记录?"
+                           @confirm="deleteArticle(item.contentId)">
+
+              <template #reference>
+                <el-button type="danger"
+                           icon="Delete"
+                           title="删除"
+                           circle>
+                </el-button>
+              </template>
+            </el-popconfirm>
           </div>
         </el-card>
       </el-timeline-item>
@@ -48,8 +73,10 @@
 <script lang="ts">
 import "@/assets/css/card.less";
 import { defineComponent, onMounted, reactive, ref } from "vue";
-import { getAllBlogs } from "@/api/blog/blog";
+import { openWindow } from "@/utils/index";
+import { getBlogList, deleteBlogById, getAllBlogs } from "@/api/blog/blog";
 import { isSuccess } from "@/utils/http/index";
+import { useMessage } from "@/hooks/web/useMessage";
 import { useOpenLoading, useCloseLoading } from "@/hooks/common/useLoading";
 import { useRouter } from "vue-router";
 import { InfoFilled } from "@element-plus/icons-vue";
@@ -61,10 +88,13 @@ export default defineComponent({
     const isEmpty = ref(false);
     const router = useRouter();
     let blogInfoList: any = reactive([]);
+    function handleContent(curItem: any) {
+      if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/edit`);
+    }
 
     onMounted(async () => {
       const loadingInstance = useOpenLoading(true);
-      const result: any = await getAllBlogs();
+      const result: any = await getBlogList();
       if (!isSuccess(result)) {
         router.push("/login");
         useCloseLoading(loadingInstance);
@@ -75,8 +105,25 @@ export default defineComponent({
       useCloseLoading(loadingInstance);
     });
 
+    async function deleteArticle(contentId: string) {
+      const result = await deleteBlogById(contentId);
+      if (isSuccess(result)) {
+        useMessage("删除成功！", "success");
+        location.reload();
+      } else {
+        useMessage("删除失败！", "error");
+      }
+    }
+
+    async function handleView(curItem: any) {
+      if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/view`);
+    }
+
     return {
+      handleContent,
       blogInfoList,
+      deleteArticle,
+      handleView,
       isEmpty,
       InfoFilled
     };
@@ -84,48 +131,3 @@ export default defineComponent({
 });
 </script>
 
-// <style lang="less" scoped>
-// .card-style {
-//   width: 55%;
-//   margin-left: 15%;
-// }
-
-// .content {
-//   text-align: justify;
-// }
-// .post-title {
-//   font-size: 1.5rem;
-//   font-weight: bold;
-// }
-// .time-commited {
-//   text-align: center;
-//   margin: 10px auto;
-//   color: rgb(26, 138, 138);
-//   font-weight: bold;
-// }
-// p {
-//   font-size: 1rem;
-//   text-align: justify;
-// }
-// .tag {
-//   position: absolute;
-//   left: 30px;
-//   bottom: 5px;
-// }
-// .button-option-style {
-//   float: right;
-//   margin-right: 1px;
-//   margin-bottom: 2px;
-// }
-// .el-tag {
-//   position: relative;
-//   float: left;
-//   bottom: -6px;
-//   left: -5px;
-// }
-
-// .container {
-//   height: 35rem;
-// }
-//
-</style>

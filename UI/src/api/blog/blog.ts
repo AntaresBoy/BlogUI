@@ -6,7 +6,8 @@ enum BlogApi {
   BlogDetail='api/blog/detail',
   BlogUpdate='api/blog/update',
   BlogNew='api/blog/new',
-  DeleteBlog='api/blog/delete'
+  DeleteBlog='api/blog/delete',
+  AllBlogs='api/blog/all-blogs'
 }
 
 let requestParams
@@ -14,6 +15,13 @@ let requestParams
 export const getBlogList = () => {
   requestParams = {
     url: BlogApi.BlogList,
+  }
+  return httpInstance.get<ResponseModel>(requestParams)
+}
+
+export const getAllBlogs = () => {
+  requestParams = {
+    url: BlogApi.AllBlogs,
   }
   return httpInstance.get<ResponseModel>(requestParams)
 }

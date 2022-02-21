@@ -23,10 +23,19 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: 'article' */ '@/pages/content/Article.vue'),
   },
   {
-    path:"/register",
-    name:"Register",
-    component:()=>import(/* webpackChunkName: "register" */"@/pages/register/Register.vue")
-  }
+    path: '/register',
+    name: 'Register',
+    component: () =>
+      import(
+        /* webpackChunkName: "register" */ '@/pages/register/Register.vue'
+      ),
+  },
+  {
+    path: '/my-blog/:username',
+    name: 'MyBlogs',
+    component: () =>
+      import(/* webpackChunkName: "Layout" */ '@/pages/Home.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -37,7 +46,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isLogin = sessionStorage.getItem('isLogin')
   if (!isLogin) {
-    if (to.path === '/login' || to.path==='/register') {
+    if (to.path === '/login' || to.path === '/register') {
       next()
     } else {
       next('/login')

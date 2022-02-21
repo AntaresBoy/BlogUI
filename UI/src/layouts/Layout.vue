@@ -1,66 +1,83 @@
 <template>
   <el-container class="common-layout">
-    <!-- <el-aside width="200px">Aside</el-aside> -->
-      <!-- <el-header>
-        <el-link id="header-title">AntaresLpq的技术博客</el-link>
-        <div class="right-header">
-          <el-link @click="handleToHome">HOME</el-link>
-          <el-link @click="handleToGitHub">Github</el-link>
-          <el-link @click="handleToArchives">ARCHIVES</el-link>
-          <el-link @click="handleToCSDN">CSDN</el-link>
-          <el-link @click="handleToCategories">CATEGORIES</el-link>
-          <el-link @click="handleLearningMaterials">学习资料</el-link>
-          <el-dropdown @command="handleCommand">
-            <el-icon class="el-icon--right">
-              <arrow-down />
-            </el-icon>
-            <el-avatar
-              size="large"
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-            ></el-avatar>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="addBlog">新建博客</el-dropdown-item>
-                <el-dropdown-item command="sign out">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-     
-       
-   
- 
-           </div>
-      </el-header> -->
-      <el-menu background-color="#545c64"
-               text-color="#fff"
-               left
-               active-text-color="#ffd04b"
-               mode="horizontal"
-               class="el-menu-style"
-               @select="handleSelect">
-        <el-menu-item index="AntaresLpq">AntaresLpq的技术博客</el-menu-item>
-        <el-menu-item index="HOME">HOME</el-menu-item>
-        <el-menu-item index="Github">Github</el-menu-item>
-        <el-menu-item index="ARCHIVES">ARCHIVES</el-menu-item>
-        <el-menu-item index="CSDN">CSDN</el-menu-item>
-        <el-menu-item index="5">学习资料</el-menu-item>
-        <el-menu-item index="6">Processing Center</el-menu-item>
-        <el-sub-menu>
-          <template #title><el-avatar size="large"
-                   src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
-        </el-avatar></template>
-          <el-menu-item index="addBlog">新建博客</el-menu-item>
-          <el-menu-item index="sign out">退出登录</el-menu-item>
-        </el-sub-menu>
+    <el-menu background-color="#545c64"
+             text-color="#fff"
+             left
+             active-text-color="#ffd04b"
+             mode="horizontal"
+             class="el-menu-style"
+             @select="handleSelect">
+      <el-menu-item index="HomeIndex">AntaresLpq的技术博客</el-menu-item>
+      <el-menu-item index="Home">首页</el-menu-item>
+      <el-menu-item index="Focus">关注</el-menu-item>
+      <el-menu-item index="Recommend">推荐</el-menu-item>
+      <el-menu-item index="Newest">最新</el-menu-item>
+      <el-menu-item index="Featured">精选</el-menu-item>
+      <el-menu-item index="Resource">资源</el-menu-item>
 
-      </el-menu>
-      <el-main>
-        <ContentCard></ContentCard>
-      </el-main>
-      <el-footer>
-        <p><small> Copyright &copy;2022 AntaresLpq</small></p>
-      </el-footer>
-    </el-container>
+      <div class="search-input-style">
+        <el-input v-model="searchValue"
+                  clearable
+                  show-word-limit="true"
+                  class="w-50 m-2"
+                  placeholder="搜索文章/用户">
+          <template #append>
+            <el-button icon="Search"
+                       @click="handleSearch"></el-button>
+          </template>
+        </el-input>
+      </div>
+
+      <div id="sub-menu-style">
+        <el-sub-menu>
+          <template #title>
+            <el-avatar size="large"
+                       src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+            </el-avatar>
+          </template>
+          <el-menu-item index="NewBlog">
+            <el-icon size="20">
+              <plus />
+            </el-icon>新建博客
+          </el-menu-item>
+
+          <el-menu-item index="MyBlog">
+            <el-icon size="20">
+              <notebook />
+            </el-icon>我的博客
+          </el-menu-item>
+          <el-menu-item index="Collect">
+            <el-icon size="20">
+              <star />
+            </el-icon>我的收藏
+          </el-menu-item>
+          <el-menu-item index="SignOut">
+            <el-icon size="20">
+              <switch-button />
+            </el-icon>退出登录
+          </el-menu-item>
+        </el-sub-menu>
+      </div>
+
+    </el-menu>
+    <el-main>
+      <ContentCard v-if="!isMyBlogsVisible"></ContentCard>
+      <MyBlogs v-if="isMyBlogsVisible"></MyBlogs>
+    </el-main>
+    <el-footer>
+      <el-row>
+        <p class="copy-right-style"><small> Copyright &copy;2022 AntaresLpq </small>
+          <el-button class="github-style"
+                     size="small"
+                     @click="handleToGithub"
+                     circle>
+            <img src="@/assets/imgs/github.svg"
+                 alt="github">
+          </el-button>
+        </p>
+      </el-row>
+    </el-footer>
+  </el-container>
 </template>
 
 <script lang="ts">
@@ -73,118 +90,140 @@ import { useMessage } from "@/hooks/web/useMessage";
 export default defineComponent({
   name: "Layout",
   components: {
-    ContentCard: defineAsyncComponent(
-      () => import("@/layouts/content/ContentCard.vue")
+    ContentCard: defineAsyncComponent(() =>
+      import("@/layouts/content/ContentCard.vue")
     ),
+    MyBlogs: defineAsyncComponent(() => import("@/pages/content/MyBlogs.vue"))
   },
   setup(props, context) {
     const router = useRouter();
-    const value = ref("");
-    const options = reactive([
-      {
-        value: "Option1",
-        label: "Option1",
-      },
-      {
-        value: "Option2",
-        label: "Option2",
-      },
-      {
-        value: "Option3",
-        label: "Option3",
-      },
-      {
-        value: "Option4",
-        label: "Option4",
-      },
-      {
-        value: "Option5",
-        label: "Option5",
-      },
-    ]);
-    async function handleToHome() {
-      router.push("/home");
-    }
+    const isMyBlogsVisible = ref(false);
+    const searchValue = ref("");
 
-    function handleLearningMaterials() {
-      openWindow(JUEJIN_URL);
-    }
-
-    function handleCommand(command: string | number) {
-      if (command === "sign out") router.push("/login");
-      if (command === "addBlog") openWindow("/#/article/newBlog/edit");
-    }
-
-    function handleToGitHub() {
+    function handleToGithub() {
       openWindow(GITHUB_URL);
     }
 
-    function handleToCSDN() {
+    async function handleToHome() {
+      isMyBlogsVisible.value = false;
+      router.push("/home");
+    }
+
+    function handleToFeatured() {
+      openWindow(GITHUB_URL);
+    }
+
+    function handleToNewest() {
       openWindow(CSDN_URL);
     }
 
-    function handleToCategories() {
-      useMessage("开发中...");
+    function handleToRecommend() {
+      useMessage("开发中...", "info");
     }
 
     function handleToArchives() {
-      useMessage("开发中...");
+      useMessage("开发中...", "info");
+    }
+
+    function handleToFocus() {
+      useMessage("开发中...", "info");
+    }
+
+    function handleToResource() {
+      openWindow(JUEJIN_URL);
+    }
+
+    function handleToHomeIndex() {
+      router.push("/home");
+      location.reload();
+    }
+
+    function handleNewBlog() {
+      openWindow("/#/article/newBlog/edit");
+    }
+
+    function handleToMyBlog() {
+      isMyBlogsVisible.value = true;
+      router.push(`/my-blog/${localStorage.getItem("username")}`);
+    }
+
+    function handleToCollect() {
+      useMessage("开发中...", "info");
+    }
+
+    function handleToSignOut() {
+      router.push("/login");
+    }
+
+    function handleSearch() {
+      console.log("handleSearch", searchValue.value);
     }
 
     const handleSelect = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
+      console.log("handleSelect", key, keyPath);
+      switch (key) {
+        case "Home":
+          handleToHome();
+          break;
+        case "Focus":
+          handleToFocus();
+          break;
+        case "Recommend":
+          handleToRecommend();
+          break;
+        case "Newest":
+          handleToNewest();
+          break;
+        case "Featured":
+          handleToFeatured();
+          break;
+        case "Resource":
+          handleToResource();
+          break;
+        case "HomeIndex":
+          handleToHomeIndex();
+          break;
+        case "NewBlog":
+          handleNewBlog();
+          break;
+        case "MyBlog":
+          handleToMyBlog();
+          break;
+        case "Collect":
+          handleToCollect();
+          break;
+        case "SignOut":
+          handleToSignOut();
+          break;
+      }
     };
 
     return {
       handleToHome,
-      handleToGitHub,
-      handleLearningMaterials,
-      handleCommand,
-      handleToCSDN,
-      handleToCategories,
       handleToArchives,
       handleSelect,
-      options,
-      value,
+      searchValue,
+      isMyBlogsVisible,
+      handleToGithub,
+      handleSearch
     };
-  },
+  }
 });
 </script>
 
 <style lang="less" scoped>
 .common-layout {
   margin: auto 1px;
-  .el-header,
   .el-footer {
     background-color: #b3c0d1;
     color: var(--el-text-color-primary);
     text-align: center;
     line-height: 60px;
   }
-  .el-header {
-    background-color: skyblue;
-    .el-link {
-      margin-right: 20px;
-      float: left;
-      font-size: 1rem;
-      font-weight: bold;
-      color: white;
-    }
-    // .right-header {
-    //   float: right;
-    // }
-  }
 
   .el-footer {
     line-height: 60px;
     margin-bottom: 1px;
-  }
-
-  .el-aside {
-    background-color: #d3dce6;
-    color: var(--el-text-color-primary);
-    text-align: center;
-    line-height: 200px;
   }
 
   .el-main {
@@ -208,7 +247,27 @@ export default defineComponent({
   }
 }
 
-.el-menu-style {
-  // float: right;
+#sub-menu-style {
+  position: absolute;
+  right: 1px;
+}
+
+.search-input-style {
+  position: relative;
+  margin: auto 1px;
+}
+
+.copy-right-style {
+  text-align: center;
+  margin: auto;
+}
+
+img {
+  width: 2rem;
+}
+.github-style {
+  position: relative;
+  top: 11px;
+  margin-left: 5px;
 }
 </style>
