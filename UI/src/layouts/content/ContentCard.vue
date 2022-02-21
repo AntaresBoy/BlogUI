@@ -53,6 +53,7 @@ import { isSuccess } from "@/utils/http/index";
 import { useOpenLoading, useCloseLoading } from "@/hooks/common/useLoading";
 import { useRouter } from "vue-router";
 import { InfoFilled } from "@element-plus/icons-vue";
+import { openWindow } from "@/utils/index";
 
 export default defineComponent({
   name: "Content",
@@ -75,57 +76,17 @@ export default defineComponent({
       useCloseLoading(loadingInstance);
     });
 
+    async function handleView(curItem: any) {
+      if (curItem.contentId) openWindow(`/#/article/${curItem.contentId}/view`);
+    }
+
     return {
       blogInfoList,
       isEmpty,
-      InfoFilled
+      InfoFilled,
+      handleView,
     };
-  }
+  },
 });
 </script>
 
-// <style lang="less" scoped>
-// .card-style {
-//   width: 55%;
-//   margin-left: 15%;
-// }
-
-// .content {
-//   text-align: justify;
-// }
-// .post-title {
-//   font-size: 1.5rem;
-//   font-weight: bold;
-// }
-// .time-commited {
-//   text-align: center;
-//   margin: 10px auto;
-//   color: rgb(26, 138, 138);
-//   font-weight: bold;
-// }
-// p {
-//   font-size: 1rem;
-//   text-align: justify;
-// }
-// .tag {
-//   position: absolute;
-//   left: 30px;
-//   bottom: 5px;
-// }
-// .button-option-style {
-//   float: right;
-//   margin-right: 1px;
-//   margin-bottom: 2px;
-// }
-// .el-tag {
-//   position: relative;
-//   float: left;
-//   bottom: -6px;
-//   left: -5px;
-// }
-
-// .container {
-//   height: 35rem;
-// }
-//
-</style>

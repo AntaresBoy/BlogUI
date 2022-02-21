@@ -14,19 +14,16 @@
       <el-menu-item index="Newest">最新</el-menu-item>
       <el-menu-item index="Featured">精选</el-menu-item>
       <el-menu-item index="Resource">资源</el-menu-item>
-
-      <div class="search-input-style">
-        <el-input v-model="searchValue"
-                  clearable
-                  show-word-limit="true"
-                  class="w-50 m-2"
-                  placeholder="搜索文章/用户">
-          <template #append>
-            <el-button icon="Search"
-                       @click="handleSearch"></el-button>
-          </template>
-        </el-input>
-      </div>
+      <el-input v-model="searchValue"
+                class="search-input-style"
+                clearable
+                show-word-limit="true"
+                placeholder="搜索文章/用户">
+        <template #append>
+          <el-button icon="Search"
+                     @click="handleSearch"></el-button>
+        </template>
+      </el-input>
 
       <div id="sub-menu-style">
         <el-sub-menu>
@@ -61,7 +58,7 @@
 
     </el-menu>
     <el-main>
-      <ContentCard v-if="!isMyBlogsVisible"></ContentCard>
+      <ContentCard v-if="!isMyBlogsVisible" ref="contentCard"></ContentCard>
       <MyBlogs v-if="isMyBlogsVisible"></MyBlogs>
     </el-main>
     <el-footer>
@@ -81,21 +78,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent, reactive, ref } from "vue";
+import { defineComponent, defineAsyncComponent, reactive, ref, toRefs, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import { openWindow } from "@/utils/index";
 import { CSDN_URL, JUEJIN_URL, GITHUB_URL } from "@/config/const/const";
 import { useMessage } from "@/hooks/web/useMessage";
+import { searchBlog } from "@/api/blog/blog";
+import { isSuccess } from "@/utils/http/index";
 
 export default defineComponent({
   name: "Layout",
   components: {
-    ContentCard: defineAsyncComponent(() =>
-      import("@/layouts/content/ContentCard.vue")
+    ContentCard: defineAsyncComponent(
+      () => import("@/layouts/content/ContentCard.vue")
     ),
-    MyBlogs: defineAsyncComponent(() => import("@/pages/content/MyBlogs.vue"))
+    MyBlogs: defineAsyncComponent(() => import("@/pages/content/MyBlogs.vue")),
   },
   setup(props, context) {
+    const contentCard=ref(null)
     const router = useRouter();
     const isMyBlogsVisible = ref(false);
     const searchValue = ref("");
@@ -155,8 +155,15 @@ export default defineComponent({
       router.push("/login");
     }
 
-    function handleSearch() {
-      console.log("handleSearch", searchValue.value);
+    async function handleSearch() {
+      const result: any = await searchBlog({ keyword: searchValue.value });
+      if(isSuccess(result)){
+        Object.assign((contentCard as any).value.blogInfoList, result.data.data,{});
+        useMessage("查询成功！")
+      }else{
+        useMessage("查询失败！")
+      }
+      console.log("handleSearch", result);
     }
 
     const handleSelect = (key: string, keyPath: string[]) => {
@@ -205,9 +212,10 @@ export default defineComponent({
       searchValue,
       isMyBlogsVisible,
       handleToGithub,
-      handleSearch
+      handleSearch,
+      contentCard
     };
-  }
+  },
 });
 </script>
 
@@ -255,6 +263,7 @@ export default defineComponent({
 .search-input-style {
   position: relative;
   margin: auto 1px;
+  width: 20%;
 }
 
 .copy-right-style {

@@ -1,13 +1,14 @@
 import { httpInstance } from '@/utils/http/index'
 import type { ResponseModel } from '@/api/model/userModel'
-import type {UpdateBlogType,NewBlogType} from "@/api/model/blogsModel"
+import type {UpdateBlogType,NewBlogType,SearchBlogType} from "@/api/model/blogsModel"
 enum BlogApi {
   BlogList = 'api/blog/list',
   BlogDetail='api/blog/detail',
   BlogUpdate='api/blog/update',
   BlogNew='api/blog/new',
   DeleteBlog='api/blog/delete',
-  AllBlogs='api/blog/all-blogs'
+  AllBlogs='api/blog/all-blogs',
+  SearchBlogs='api/blog/search'
 }
 
 let requestParams
@@ -38,6 +39,14 @@ export const getDetailById=(contentId: string)=>{
     url:BlogApi.BlogDetail+`?contentId=${contentId}`
   }
   return httpInstance.get<ResponseModel>(requestParams)
+}
+
+export const searchBlog=(params: SearchBlogType)=>{
+  requestParams={
+    url:BlogApi.SearchBlogs,
+    data:params
+  }
+  return httpInstance.post<ResponseModel>(requestParams)
 }
 
 export const updateBlogById=(params:UpdateBlogType)=>{

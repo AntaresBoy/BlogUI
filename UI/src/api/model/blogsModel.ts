@@ -10,3 +10,7 @@ export interface NewBlogType {
   title: string
   tags: Array<string>
 }
+
+export interface SearchBlogType{
+  keyword: string | "" | undefined
+}
