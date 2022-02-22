@@ -21,8 +21,13 @@ export interface LoginModel {
   statusText: string
 }
 
-export type RegisterModel=LoginModel
+export type RegisterModel = LoginModel
+
 export interface ResponseModel {
-  errno: number | string
-  message?: string
+  status: number | string
+  statusText: string
+  data: {
+    data: []
+    errno: number
+  }
 }

@@ -1,7 +1,7 @@
 <template>
-  <Layout></Layout>
+  <Header></Header>
 </template>
 
 <script lang="ts" setup>
-import Layout from '@/layouts/Layout.vue'
+import Header from '@/layouts/Header.vue'
 </script>
