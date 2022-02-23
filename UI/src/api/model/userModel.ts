@@ -25,6 +25,7 @@ export type RegisterModel = LoginModel
 
 export interface ResponseModel {
   status: number | string
+  errno?: number
   statusText: string
   data: {
     data: []
