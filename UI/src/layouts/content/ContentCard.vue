@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+      <Calendar class="el-calendar-style"></Calendar>
     <el-timeline v-for="item in blogInfoList" :key="item.contentId">
       <el-timeline-item
         v-if="!isEmpty"
@@ -15,11 +16,6 @@
             commited by: {{ item.author }} on: {{ item.createtime }}
           </p>
           <p class="content">
-            <!-- {{
-              item.content.length > 100
-                ? item.content.slice(1, 100) + '...'
-                : item.content
-            }} -->
             {{ handleContentCharNumber(item.content) }}
           </p>
           <el-button circle class="el-tag" v-if="item.tags">
@@ -53,7 +49,7 @@
 
 <script lang="ts">
 import '@/assets/css/card.less'
-import { defineComponent, onMounted, reactive, ref } from 'vue'
+import { defineComponent, onMounted, reactive, ref,defineAsyncComponent } from 'vue'
 import { getAllBlogs } from '@/api/blog/blog'
 import { isSuccess } from '@/utils/http/index'
 import { useOpenLoading, useCloseLoading } from '@/hooks/common/useLoading'
@@ -64,7 +60,9 @@ import { handleContentCharNumber } from '@/layouts/common/common'
 
 export default defineComponent({
   name: 'Content',
-  components: {},
+  components: {
+    Calendar:defineAsyncComponent(()=>import("@/components/calendar/Calendar.vue"))
+  },
   setup(props) {
     const isEmpty = ref(false)
     const router = useRouter()
@@ -97,3 +95,12 @@ export default defineComponent({
   },
 })
 </script>
+<style lang="less">
+
+.el-calendar-style {
+  width: 25%;
+  float: right;
+  margin-top: 1.6%;
+  background: chocolate;
+}
+</style>

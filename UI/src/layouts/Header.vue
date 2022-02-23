@@ -55,11 +55,6 @@
     </el-menu>
 
     <el-main>
-      <el-calendar class="el-calendar-style">
-        <template #header="{ date }">
-          <span>{{ date }}</span>
-        </template>
-      </el-calendar>
       <ContentCard v-if="!isMyBlogsVisible" ref="contentCard"></ContentCard>
       <MyBlogs v-if="isMyBlogsVisible"></MyBlogs>
     </el-main>
@@ -281,14 +276,9 @@ img {
   top: 11px;
   margin-left: 5px;
 }
+
 /deep/.el-calendar-table .el-calendar-day {
   height: 5%;
   float: right;
-}
-.el-calendar-style {
-  width: 20%;
-  float: right;
-  margin-top: 1.6%;
-  background: chocolate;
 }
 </style>
