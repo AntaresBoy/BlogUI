@@ -25,10 +25,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       # 安装依赖
-      - run: yarn
+      - run: npm
 
       # 打包构建
-      - run: yarn build
+      - run: npm run build
 
       # 发布到 GitHub Pages
       - name: Deploy
