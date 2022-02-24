@@ -10,13 +10,12 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      # 下载代码
-      - name: Checkout
-        uses: actions/checkout@main
+     -name: Checkout
+      uses: actions/checkout@main
 
-      # 安装依赖
-      - name: Build and Deploy
-        uses: AntaresBoy/github-pages-deploy-action@main
+    # 安装依赖
+     -name: Build and Deploy
+      uses: AntaresBoy/github-pages-deploy-action@main
 
       # 打包构建
       env:
