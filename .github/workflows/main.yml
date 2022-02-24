@@ -1,26 +1,54 @@
-name: GitHub Actions Build and Deploy BlogUI
+name: Blog UI CI
 
-# 当 main 分支 push 代码的时候触发 workflow
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  build-deploy:
+  # 发布到 GitHub Pages
+  # build-and-deploy-to-github-pages:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@master
+
+  #     - name: Build and Deploy to GitHub Pages
+  #       uses: JamesIves/github-pages-deploy-action@master
+  #       env:
+  #         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  #         BRANCH: gh-pages
+  #         FOLDER: build
+  #         BUILD_SCRIPT: npm install && npm run build
+
+  # 发布到服务器
+  build-and-deploy-to-server:
     runs-on: ubuntu-latest
     steps:
-     -name: Checkout
-      uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
 
-    # 安装依赖
-     -name: Build and Deploy
-      uses: AntaresBoy/github-pages-deploy-action@main
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
 
-      # 打包构建
-      env:
-        ACCESS_TOKEN: ${{secret.ACCESS_TOKEN}}
-        BRANCH: gh-pages
-        FOLDER: build
-        BUILD_SCRIPT: npm install && npm run build
+      - name: Install Dependencies
+        run: npm install
+        env:
+          CI: true
 
+      - name: Build Project
+        run: npm run build
+        env:
+          CI: true
+
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@v2.1.2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: '-rltgoDzvO --delete'
+          SOURCE: 'dist/'
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}
