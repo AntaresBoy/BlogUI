@@ -16,7 +16,7 @@ jobs:
 
       # 安装依赖
       - name: Build and Deploy
-        uses: JamesIves/github-pages-deploy-action@main
+        uses: AntaresBoy/github-pages-deploy-action@main
 
       # 打包构建
       env:
