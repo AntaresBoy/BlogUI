@@ -10,7 +10,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      #下载代码
+      # 下载代码
       - name: Checkout
         uses: actions/checkout@main
 
