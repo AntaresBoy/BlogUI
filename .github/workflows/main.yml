@@ -18,11 +18,12 @@ jobs:
           npm run build  # 执行打包
           tar -zcvf dist.tar.gz dist # 目标文件进行打包
       - name: Deploy
-        uses: cross-the-world/ssh-pipeline@master # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个安全拷贝(security copy)操作
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个安全拷贝(security copy)操作
         env:
           WELCOME: "ssh scp ssh pipelines"
           LASTSSH: "Doing something after copying"
         with:
+         SERVER_PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
          host: ${{ secrets.DR_HOST }}
          user: ${{ secrets.DR_USER }}
          pass: ${{ secrets.DR_PASS }}
