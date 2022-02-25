@@ -1,36 +1,32 @@
-name: ssh-pipeline
+# main.yml
+name: deploy to aliyun
 on:
   push:
     branches:
       - main
-
-env:
-  DIR1: "/home/www/BlogUI"
-
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - name: checkout
-        uses: actions/checkout@v1
-
-      - name: ssh pipeline 1
-        uses: cross-the-world/ssh-pipeline@master
-        env:
-          WELCOME: "ssh pipeline"
-          DIR2: "/root/lpq"
+      # 使用 node:10
+      - name: use Node.js 10
+        uses: actions/setup-node@v1
         with:
-          host: ${{ secrets.DR_HOST }}
-          user: ${{ secrets.DR_USER }}
-          pass: ${{ secrets.DR_PASS }}
-          port: ${{ secrets.DR_PORT }}
-          connect_timeout: 10s
-          script: |
-            cd /home/www
-            mkdir test
-
-			
-			
-			
+          node-version: 12
+      # npm install
+      - name: npm install and build
+        run: |
+          npm install
+          npm run build
+        env:
+          CI: true
+      # Deploy
+      - name: Deploy
+        uses: easingthemes/ssh-deploy@v2.0.7
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
+          ARGS: "-avz --delete"
+          SOURCE: "dist/*"
+          REMOTE_HOST: ${{ secrets.DR_HOST }}
+          REMOTE_USER: ${{ secrets.DR_USER }}
+          TARGET: "/home/www/BlogUI"
