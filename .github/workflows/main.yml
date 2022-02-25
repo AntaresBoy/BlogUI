@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 使用 node:10
-      - name: use Node.js 10
+      - name: use Node.js 12
         uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -29,4 +29,4 @@ jobs:
           SOURCE: "dist/*"
           REMOTE_HOST: ${{ secrets.DR_HOST }}
           REMOTE_USER: ${{ secrets.DR_USER }}
-          TARGET: "/home/www/BlogUI"
+          TARGET: "/home"
