@@ -37,7 +37,7 @@ jobs:
         uses: zhenyuWang/Upload-File-Action@v1.0.1
         with:
           username: "lpq"
-          server: "http://39.108.119.239/"
+          server: "39.108.119.239"
           port: "22"
           ssh_private_key: ${{ secrets.ACCESS_TOKEN}}
           # 要上传文件所在目录
