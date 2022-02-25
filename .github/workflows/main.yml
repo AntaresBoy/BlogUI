@@ -1,4 +1,4 @@
-name: build
+name: build and deploy
 on: 
   push: 
     branches: 
@@ -35,5 +35,5 @@ jobs:
            './dist.tar.gz' => /home/www/BlogUI
          last_ssh: |
             cd /home/www/BlogUI # 切换到部署目录
-            tar -xzvf dist.tar.gz  # 将 tar 打包文件进行解压到当前部署目录
+            tar -zxvf dist.tar.gz  # 将 tar 打包文件进行解压到当前部署目录
            
