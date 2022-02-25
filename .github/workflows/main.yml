@@ -16,7 +16,7 @@ jobs:
         run: |
           npm install  # 安装依赖
           npm run build  # 执行打包
-          tar -czvf dist.tar.gz dist # 目标文件进行打包
+          tar -zcvf dist.tar.gz dist # 目标文件进行打包
       - name: Deploy
         uses: cross-the-world/ssh-scp-ssh-pipelines@latest # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个安全拷贝(security copy)操作
         env:
@@ -32,8 +32,9 @@ jobs:
             rm -rf /home/www/BlogUI/dist
             mkdir -p /home/www/BlogUI/dist
          scp: |
-           './dist.tar.gz' => /home/www/BlogUI
+           'dist.tar.gz' => /home/www/BlogUI
          last_ssh: |
             cd /home/www/BlogUI # 切换到部署目录
+            mkdir test
             tar -zxvf dist.tar.gz  # 将 tar 打包文件进行解压到当前部署目录
            
