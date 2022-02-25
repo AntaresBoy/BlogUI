@@ -30,7 +30,6 @@ jobs:
         uses: zhenyuWang/Upload-File-Action@v1.0.1
         with:
           username: "lpq"
-          password: "LPq120119"
           server: "39.108.119.239"
           port: "22"
           ssh_private_key: ${{ secrets.DR_PRIVATE_KEY}}
