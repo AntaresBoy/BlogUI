@@ -1,40 +1,61 @@
-name: build and deploy
-on: 
-  push: 
-    branches: 
-      - main
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
-        with:
-          persist-credentials: false
+name: note build
+# 触发workflow的条件
+on:
+    push:
+        # 只有master分支发生push事件时，才会触发workflow
+        branches: [main]
+    pull_request:
+        branches: [main]
 
-      - name: Install and Build # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install  # 安装依赖
-          npm run build  # 执行打包
-          tar -zcvf dist.tar.gz dist # 目标文件进行打包
-      - name: Deploy
-        uses: cross-the-world/ssh-scp-ssh-pipelines@latest # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个安全拷贝(security copy)操作
-        env:
-          WELCOME: "ssh scp ssh pipelines"
-          LASTSSH: "Doing something after copying"
-        with:
-         host: ${{ secrets.DR_HOST }}
-         user: ${{ secrets.DR_USER }}
-         pass: ${{ secrets.DR_PASS }}
-         port: ${{ secrets.DR_PORT }}
-         connect_timeout: 20s
-         first_ssh: |
-            rm -rf /home/www/BlogUI/dist
-            mkdir -p /home/www/BlogUI/dist
-         scp: |
-           'dist.tar.gz' => /home/www/BlogUI
-         last_ssh: |
-            cd /home/www/BlogUI # 切换到部署目录
-            mkdir test
-            tar -zxvf dist.tar.gz  # 将 tar 打包文件进行解压到当前部署目录
-           
+env:
+    SERVER_PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }} # 服务器私钥
+    SERVER_HOST: ${{ secrets.DR_HOST }} # 服务器IP地址
+    USER_NAME: ${{ secrets.DR_USER }} # 服务器用户名
+    cache-name: note
+
+# jobs表示执行的一项或多项任务
+jobs:
+    build: # 任务的job_id，具体名称自定义，这里build代表打包
+        runs-on: ubuntu-latest # runs-on字段指定运行所需要的虚拟机环境。注意：这个是必填字段
+        steps:
+            - uses: actions/checkout@master
+
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: v14.17.0
+
+            #缓存依赖
+            - name: Cache nodemodules
+              uses: actions/cache@v1
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  # 需要缓存的文件的路径
+                  path: ./node_modules 
+                  # 对缓存的文件指定的唯一标识
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./package.json') }} 
+                  # 用于没有再找目标key的缓存的backup选项
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
+
+            # 装依赖
+            - name: Install
+              run: npm install
+
+            # 打包
+            - name: Build
+              run: npm run build
+
+            # 上传打包资源
+            - name: Deploy
+              uses: easingthemes/ssh-deploy@v2.0.7
+              env:
+                  SSH_PRIVATE_KEY: ${{ env.SERVER_PRIVATE_KEY }}
+                  ARGS: '-avz --delete'
+                  SOURCE: 'dist/'
+                  REMOTE_HOST: ${{ env.DR_HOST }}
+                  REMOTE_USER: ${{ env.DR_USER }}
+                  TARGET: /home/www # 服务器目标路径
+
