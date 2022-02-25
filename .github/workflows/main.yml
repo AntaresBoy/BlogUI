@@ -1,40 +1,40 @@
-name: build and deploy
-on: 
-  push: 
-    branches: 
+name: 脚本名称
+# 触发脚本的条件，develop分支push代码的时候
+on:
+  push:
+    branches:
       - main
+# 要执行的任务
 jobs:
-  build-and-deploy:
+  # 任务名称
+  build:
+    # runs-on 指定job任务运行所需要的虚拟机环境（必填）
     runs-on: ubuntu-latest
+    # 任务步骤
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
-        with:
-          persist-credentials: false
+      # 获取源码
+      - name: 迁出代码
+        # 使用action库  actions/checkout获取源码
+        uses: actions/checkout@master
 
-      - name: Install and Build # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install  # 安装依赖
-          npm run build  # 执行打包
-          tar -zcvf dist.tar.gz dist # 目标文件进行打包
-      - name: Deploy
-        uses: cross-the-world/ssh-scp-ssh-pipelines@latest # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个安全拷贝(security copy)操作
-        env:
-          WELCOME: "ssh scp ssh pipelines"
-          LASTSSH: "Doing something after copying"
+      # 安装依赖
+      - name: 安装依赖
+        run: npm install
+
+      # 打包
+      - name: 打包
+        run: npm run build
+
+      # 上传打包文件到远程服务器
+      - name: 上传文件到远程服务器
+        uses: zhenyuWang/Upload-File-Action@v1.0.1
         with:
-         host: ${{ secrets.DR_HOST }}
-         user: ${{ secrets.DR_USER }}
-         pass: ${{ secrets.DR_PASS }}
-         port: ${{ secrets.DR_PORT }}
-         connect_timeout: 20s
-         first_ssh: |
-            rm -rf /home/www/BlogUI/dist
-            mkdir -p /home/www/BlogUI/dist
-         scp: |
-           'dist.tar.gz' => /home/www/BlogUI
-         last_ssh: |
-            cd /home/www/BlogUI # 切换到部署目录
-            mkdir test
-            tar -zxvf dist.tar.gz  # 将 tar 打包文件进行解压到当前部署目录
-           
+          username: "lpq"
+          password: "LPq120119"
+          server: "39.108.119.239"
+          port: "22"
+          ssh_private_key: ${{ secrets.DR_PRIVATE_KEY}}
+          # 要上传文件所在目录
+          local_path: "./dist/*"
+          # 远程服务器目标路径
+          target_path: "/home/www/BlugUI"
