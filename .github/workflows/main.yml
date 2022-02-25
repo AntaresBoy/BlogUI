@@ -1,4 +1,4 @@
-name: 脚本名称
+name: build and deploy
 # 触发脚本的条件，develop分支push代码的时候
 on:
   push:
