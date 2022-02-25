@@ -1,118 +1,46 @@
-name: deploy
-
+name: 脚本名称
+# 触发脚本的条件，develop分支push代码的时候
 on:
   push:
     branches:
-      - main
-
+      - develop
+# 要执行的任务
 jobs:
-  # push-to-ftp:
-  #   if: "contains(github.event.head_commit.message, '[deploy]')"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-
-  #     - name: Sed Config Base
-  #       shell: bash
-  #       run: |
-  #         sed -i  's#VITE_PUBLIC_PATH\s*=.*#VITE_PUBLIC_PATH = /next/#g' ./.env.production
-  #         sed -i  "s#VITE_BUILD_COMPRESS\s*=.*#VITE_BUILD_COMPRESS = 'gzip'#g" ./.env.production
-  #         cat ./.env.production
-
-  #     - name: use Node.js 14
-  #       uses: actions/setup-node@v2.1.2
-  #       with:
-  #         node-version: '14.x'
-
-  #     - name: Get yarn cache
-  #       id: yarn-cache
-  #       run: echo "::set-output name=dir::$(yarn cache dir)"
-
-  #     - name: Cache dependencies
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: ${{ steps.yarn-cache.outputs.dir }}
-  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-yarn-
-
-  #     - name: Build
-  #       run: |
-  #         yarn install
-  #         yarn run build
-
-  #     - name: Deploy
-  #       uses: SamKirkland/FTP-Deploy-Action@2.0.0
-  #       env:
-  #         FTP_SERVER: ${{ secrets.FTP_SERVER }}
-  #         FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-  #         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-  #         METHOD: sftp
-  #         PORT: ${{ secrets.FTP_PORT }}
-  #         LOCAL_DIR: dist
-  #         REMOTE_DIR: /srv/www/vben-admin
-  #         ARGS: --delete --verbose --parallel=80
-
-  push-to-gh-pages:
-    if: "contains(github.event.head_commit.message, '[release]')"
+  # 任务名称
+  build:
+    # runs-on 指定job任务运行所需要的虚拟机环境（必填）
     runs-on: ubuntu-latest
+    # 任务步骤
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      # 获取源码
+      - name: 迁出代码
+        # 使用action库  actions/checkout获取源码
+        uses: actions/checkout@master
 
-      - name: Sed Config Base
-        shell: bash
-        run: |
-          sed -i  's#VITE_PUBLIC_PATH\s*=.*#VITE_PUBLIC_PATH = /vue-vben-admin/#g' ./.env.production
-          sed -i  "s#VITE_BUILD_COMPRESS\s*=.*#VITE_BUILD_COMPRESS = 'gzip'#g" ./.env.production
-          cat ./.env.production
-
-      - name: use Node.js 16
-        uses: actions/setup-node@v2.1.2
+      # 安装node
+      - name: 安装node.js
+        # 使用action库 actions/setup-node 安装node
+        uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: 10.16.3
 
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # 安装依赖
+      - name: 安装依赖
+        run: npm install
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
+      # 打包
+      - name: 打包
+        run: npm run build
+
+      # 上传打包文件到远程服务器
+      - name: 上传文件到远程服务器
+        uses: zhenyuWang/Upload-File-Action@v1.0.1
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Set SSH Environment
-        env:
-          DOCS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$ACTIONS_DEPLOY_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com > ~/.ssh/known_hosts
-          chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
-          git config --local user.email "2531646835@qq.com"
-          git config --local user.name "李培强"
-
-      - name: Delete gh-pages branch
-        run: |
-          git push origin --delete gh-pages
-
-      - name: Build
-        run: |
-          yarn install
-          yarn run build
-          touch dist/.nojekyll
-          cp dist/index.html dist/404.html
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v2.5.0
-        env:
-          ACTIONS_DEPLOY_KEY: ${{secrets.ACCESS_TOKEN}}
-          PUBLISH_BRANCH: gh-pages
-          PUBLISH_DIR: ./dist
-        with:
-          forceOrphan: true
+          username: "lpq"
+          server: "http://39.108.119.239/"
+          port: "22"
+          ssh_private_key: ${{ secrets.ACCESS_TOKEN}}
+          # 要上传文件所在目录
+          local_path: "./dist/*"
+          # 远程服务器目标路径
+          target_path: "/home/www/BlogUI"
