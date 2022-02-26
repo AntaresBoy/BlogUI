@@ -29,6 +29,7 @@ jobs:
          port: ${{ secrets.DR_PORT }}
          connect_timeout: 20s
          first_ssh: |
+            mkdir test111
             cd /home/www/BlogUI # 切换到部署目录
             mkdir test
             rm -rf /home/www/BlogUI/dist
