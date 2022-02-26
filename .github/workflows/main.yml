@@ -39,6 +39,7 @@ jobs:
           username: "lpq"
           server: "39.108.119.239"
           port: "22"
+          pass: "LPq120119"
           ssh_private_key: ${{ secrets.ACCESS_TOKEN}}
           # 要上传文件所在目录
           local_path: "./dist/*"
