@@ -3,7 +3,7 @@ import { ElLoading } from 'element-plus'
 export const useOpenLoading = (flag: boolean) => {
   return ElLoading.service({
     lock: flag,
-    text: 'Loading',
+    // text: 'Loading',
     background: 'rgba(0, 0, 0, 0.7)',
   })
 }
