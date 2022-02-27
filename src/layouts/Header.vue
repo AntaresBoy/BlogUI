@@ -223,15 +223,12 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-.common-layout {
-  margin: auto 1px;
-
+ .common-layout {
   .el-footer {
-    margin-bottom: 0.1rem;
     background-color: #b3c0d1;
     color: var(--el-text-color-primary);
     text-align: center;
-    line-height: 60px;
+    line-height: 100%;
   }
 
   .el-main {
@@ -243,11 +240,11 @@ export default defineComponent({
 
   .el-container:nth-child(5) .el-aside,
   .el-container:nth-child(6) .el-aside {
-    line-height: 560px;
+    line-height: 100%;
   }
 
   .el-container:nth-child(7) .el-aside {
-    line-height: 820px;
+    line-height: 100%;
   }
 }
 
