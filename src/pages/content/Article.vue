@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import '@/assets/css/article.less'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import { useMessage, useCloser } from '@/hooks/web/useMessage'
 import {
   defineComponent,
@@ -53,6 +53,7 @@ import { isSuccess } from '@/utils/http/index'
 import { UpdateBlogType, NewBlogType } from '@/api/model/blogsModel'
 import { TAGS } from '@/config/const/const'
 import { useOpenLoading, useCloseLoading } from '@/hooks/common/useLoading'
+// import router from '@/router'
 
 export default defineComponent({
   name: 'Article',
@@ -62,6 +63,7 @@ export default defineComponent({
     ),
   },
   setup(props, context) {
+    const router=useRouter()
     const { params } = useRoute()
     const isViewType = ref<boolean>(false)
     const mdEditor: any = ref(null)
@@ -119,7 +121,10 @@ export default defineComponent({
       }
       const result: any = await updateBlogById(data)
       if (isSuccess(result)) {
-        useCloser('更新')
+        // useCloser('更新')
+        useMessage("博客更新并发布成功！")
+        router.push(`/article/${params.contentId}/view`)
+        setTimeout(()=>{location.reload()},1000)
       } else {
         useMessage('博客更新失败！', 'error')
       }
