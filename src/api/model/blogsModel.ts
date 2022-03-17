@@ -3,12 +3,14 @@ export interface UpdateBlogType {
   title: string | undefined
   content: string | undefined
   tags: Array<string>
+  overview?:string
 }
 
 export interface NewBlogType {
   content: string | ''
   title: string
   tags: Array<string>
+  overview?: string
 }
 
 export interface SearchBlogType{

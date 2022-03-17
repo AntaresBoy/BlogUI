@@ -16,7 +16,7 @@
             commited by: {{ item.author }} on: {{ item.createtime }}
           </p>
           <p class="content">
-            {{ handleContentCharNumber(item.content) }}
+            {{ item.overview? handleContentCharNumber(item.overview) : handleContentCharNumber(item.content) }}
           </p>
           <el-button circle class="el-tag" v-if="item.tags">
             {{ item.tags }}
