@@ -49,7 +49,7 @@
       </el-form>
 
     </div>
-     <p class="icp-style"><a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239</a></p>
+     <p class="icp-style"><a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239号</a></p>
   </div>
 </template>
 

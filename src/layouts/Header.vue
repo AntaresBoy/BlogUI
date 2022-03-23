@@ -74,7 +74,7 @@
         </p>
         
       </el-row>
-      <a href="https://beian.miit.gov.cn" target="_blank" >粤ICP备2022032239</a>
+      <a href="https://beian.miit.gov.cn" target="_blank" >粤ICP备2022032239号</a>
     </el-footer>
   </el-container>
 </template>
