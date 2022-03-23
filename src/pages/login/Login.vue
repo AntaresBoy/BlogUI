@@ -47,7 +47,9 @@
           </el-form-item>
         </el-row>
       </el-form>
+
     </div>
+     <p class="icp-style"><a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239</a></p>
   </div>
 </template>
 
@@ -92,5 +94,15 @@ const loginInfo = reactive({
   left: 300px;
   top: 10px;
   color: lightseagreen;
+}
+a{
+  text-decoration:none;
+  color: inherit;
+  font-size: 0.8rem;
+}
+.icp-style{
+  position: absolute;
+  bottom: 1%;
+  left: 50%;
 }
 </style>

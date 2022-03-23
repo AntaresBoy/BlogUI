@@ -72,7 +72,9 @@
             <img src="@/assets/imgs/github.svg" alt="github" />
           </el-button>
         </p>
+        
       </el-row>
+      <a href="https://beian.miit.gov.cn" target="_blank" >粤ICP备2022032239</a>
     </el-footer>
   </el-container>
 </template>
@@ -277,5 +279,10 @@ img {
 /deep/.el-calendar-table .el-calendar-day {
   height: 5%;
   float: right;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 0.8rem;
 }
 </style>
