@@ -49,7 +49,7 @@
       </el-form>
 
     </div>
-     <p class="icp-style"><a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239号</a></p>
+     <p class="icp-style"><a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239号</a>&nbsp;<a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022032239号-1</a></p>
   </div>
 </template>
 
@@ -103,6 +103,6 @@ a{
 .icp-style{
   position: absolute;
   bottom: 1%;
-  left: 50%;
+  left: 40%;
 }
 </style>
